@@ -15,6 +15,9 @@ hydraAdmin.listOAuth2Clients(10,0).then(({body}) => {
 })
 
 router.get('/', csrfProtection, (req, res, next) => {
+
+  console.log("GET consent request", req);
+
   // Parses the URL query
   const query = url.parse(req.url, true).query;
 
@@ -28,6 +31,9 @@ router.get('/', csrfProtection, (req, res, next) => {
   hydraAdmin.getConsentRequest(challenge)
     // This will be called if the HTTP request was successful
     .then(({body}) => {
+
+      console.log("Body from hydraAdmin.getConsentRequest", body);
+
       // If a user has granted this application the requested scope, hydra will tell us to not show the UI.
       if (body.skip) {
         // You can apply logic here, for example grant another scope, or do whatever...
@@ -52,6 +58,9 @@ router.get('/', csrfProtection, (req, res, next) => {
             // idToken: { baz: 'bar' },
           }
         }).then(({body}) => {
+
+          console.log("Body from hydraAdmin.acceptConsentRequest", body);
+
           // All we need to do now is to redirect the user back to hydra!
           res.redirect(String(body.redirectTo));
         });
@@ -74,6 +83,9 @@ router.get('/', csrfProtection, (req, res, next) => {
 });
 
 router.post('/', csrfProtection, (req, res, next) => {
+
+  console.log("POST consent request", req);
+
   // The challenge is now a hidden input field, so let's take it from the request body instead
   const challenge = req.body.challenge;
 
@@ -121,6 +133,9 @@ router.post('/', csrfProtection, (req, res, next) => {
   hydraAdmin.getConsentRequest(challenge)
     // This will be called if the HTTP request was successful
     .then(({body}) => {
+
+      console.log("Body from hydraAdmin.getConsentRequest", body);
+
       return hydraAdmin.acceptConsentRequest(challenge, {
         // We can grant all scopes that have been requested - hydra already checked for us that no additional scopes
         // are requested accidentally.
@@ -139,6 +154,9 @@ router.post('/', csrfProtection, (req, res, next) => {
         // When this "remember" sesion expires, in seconds. Set this to 0 so it will never expire.
         rememberFor: 3600,
       }).then(({body}) => {
+
+        console.log("Body from hydraAdmin.acceptConsentRequest", body);
+
         // All we need to do now is to redirect the user back to hydra!
         res.redirect(String(body.redirectTo));
       })
