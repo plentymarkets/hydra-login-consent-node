@@ -11,6 +11,9 @@ const router = express.Router();
 const exampleUsers = ['thomas@plenty.com', 'christoph@plenty.com', 'götz@plenty.com', 'marcus@plenty.com'];
 
 router.get('/', csrfProtection, (req, res, next) => {
+
+  console.log("GET login Request", req);
+
   // Parses the URL query
   const query = url.parse(req.url, true).query;
 
@@ -23,6 +26,9 @@ router.get('/', csrfProtection, (req, res, next) => {
 
   hydraAdmin.getLoginRequest(challenge)
     .then(({body}) => {
+
+      console.log("Body from hydraAdmin.getLoginRequest", body);
+
       // If hydra was already able to authenticate the user, skip will be true and we do not need to re-authenticate
       // the user.
       if (body.skip) {
@@ -52,6 +58,9 @@ router.get('/', csrfProtection, (req, res, next) => {
 });
 
 router.post('/', csrfProtection, (req, res, next) => {
+
+  console.log("POST login Request", req);
+
   // The challenge is now a hidden input field, so let's take it from the request body instead
   const challenge = req.body.challenge;
 
@@ -100,6 +109,9 @@ router.post('/', csrfProtection, (req, res, next) => {
     // acr: '0',
   })
     .then( ({body})=> {
+
+      console.log("Body from hydraAdmin.acceptLoginRequest", body);
+
       // All we need to do now is to redirect the user back to hydra!
       res.redirect(String(body.redirectTo));
     })
